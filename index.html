@@ -187,20 +187,21 @@
         }
 
         function checkAnswer() {
-            const userAns = document.getElementById('answer-input').value.replace(/\s/g, '');
-            const targetAns = blanks.join('').replace(/\s/g, '');
+            // 사용자 입력과 정답 모두에서 공백 및 모든 문장 부호를 제거하고 비교
+            const normalize = (str) => str.replace(/[.,\s!?;:"']/g, '');
+            
+            const userAns = normalize(document.getElementById('answer-input').value);
+            const targetAns = normalize(blanks.join(''));
             const msgDiv = document.getElementById('message');
 
             msgDiv.style.display = "block";
-            if(userAns === targetAns) {
+            if(userAns === targetAns && userAns !== "") {
                 msgDiv.className = "msg-success";
                 msgDiv.innerText = "🎉 정답입니다! 잘 외우셨네요.";
-                // 정답이면 빈칸 채워주기
-                const words = fullText.split(' ');
                 document.getElementById('quiz-text').innerText = fullText;
             } else {
                 msgDiv.className = "msg-error";
-                msgDiv.innerText = "❌ 틀렸습니다. 다시 시도해보세요!";
+                msgDiv.innerText = "❌ 틀렸습니다. (쉼표, 마침표 없이 글자만 입력해보세요)";
             }
         }
 
