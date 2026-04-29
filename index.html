@@ -324,6 +324,7 @@
 
         async function init() {
             try {
+                setDifficulty(difficulty);
                 const res = await fetch('verses.json');
                 allVerses = await res.json();
                 loadNextVerse();
@@ -345,7 +346,10 @@
 
         function makeQuiz() {
             const words = fullText.split(' ');
-            const numBlanks = Math.max(1, Math.floor(words.length * 0.4));
+            const diffMap = { 'easy': 0.2, 'normal': 0.4, 'hard': 0.7 };
+            const ratio = diffMap[difficulty] || 0.4;
+            
+            const numBlanks = Math.max(1, Math.floor(words.length * ratio));
             const blankIndices = [];
             
             while(blankIndices.length < numBlanks) {
@@ -400,6 +404,16 @@
         }
 
         function showHint() { alert("원문: " + fullText); }
+
+        document.getElementById('answer-input').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') checkAnswer();
+        });
+
+        init();
+    </script>
+</body>
+</html>
+ }
 
         document.getElementById('answer-input').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') checkAnswer();
