@@ -2,192 +2,213 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YN 성구 암송 테스트</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YN 성구 퀴즈</title>
     <style>
         :root {
-            --primary-color: #4a90e2;
-            --success-color: #2ecc71;
-            --error-color: #e74c3c;
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
+            --primary: #6366f1;
+            --success: #22c55e;
+            --error: #ef4444;
+            --bg: #f8fafc;
         }
 
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'Pretendard', sans-serif;
+            background-color: var(--bg);
             margin: 0;
+            padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #333;
+            color: #1e293b;
         }
 
-        .container {
-            width: 90%;
-            max-width: 500px;
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
-        }
-
-        .verse-info {
-            background: #f0f4f8;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            text-align: center;
-        }
-
-        .reference {
-            font-weight: bold;
-            font-size: 1.2rem;
-            display: block;
-        }
-
-        textarea {
+        .card {
             width: 100%;
-            height: 120px;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            resize: none;
-            margin-bottom: 1rem;
-            transition: border-color 0.3s;
+            max-width: 450px;
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        textarea:focus {
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 1.25rem;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .info-badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .quiz-container {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 24px;
+            word-break: keep-all;
+        }
+
+        .blank {
+            display: inline-block;
+            border-bottom: 2px solid var(--primary);
+            min-width: 60px;
+            height: 1.2em;
+            margin: 0 4px;
+            vertical-align: middle;
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+        }
+
+        input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--primary);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
         }
 
         button {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
-            color: white;
+            padding: 14px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: opacity 0.2s;
         }
 
-        button:hover {
-            background-color: #357abd;
-        }
+        .btn-primary { background: var(--primary); color: white; grid-column: span 2; }
+        .btn-secondary { background: #f1f5f9; color: #475569; }
+        
+        button:active { opacity: 0.7; }
 
-        #result {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 8px;
+        #message {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
             display: none;
-            line-height: 1.6;
+            font-weight: 600;
         }
 
-        .correct {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .wrong {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .diff-label {
-            font-weight: bold;
-            display: block;
-            margin-top: 0.5rem;
-        }
-
-        .original-text {
-            display: block;
-            font-style: italic;
-            color: #555;
-        }
+        .msg-success { background: #dcfce7; color: #166534; }
+        .msg-error { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📖 성구 암송 테스트</h1>
-        <div id="loading">성구를 불러오는 중...</div>
-        
-        <div id="test-area" style="display: none;">
-            <div class="verse-info">
-                <span id="reference-display" class="reference"></span>
-            </div>
-            
-            <textarea id="user-input" placeholder="여기에 암송한 성구를 입력하세요..."></textarea>
-            <button onclick="checkVerse()">확인하기</button>
-            
-            <div id="result"></div>
+    <div class="card">
+        <div class="header">
+            <h1>📖 성구 빈칸 맞추기</h1>
+            <div id="ref-badge" class="info-badge">로딩 중...</div>
         </div>
+
+        <div id="quiz-text" class="quiz-container">
+            <!-- 퀴즈 텍스트가 여기에 들어갑니다 -->
+        </div>
+
+        <input type="text" id="answer-input" placeholder="빈칸에 들어갈 말을 순서대로 쓰세요" autocomplete="off">
+        
+        <div class="btn-group">
+            <button class="btn-primary" onclick="checkAnswer()">정답 확인</button>
+            <button class="btn-secondary" onclick="showHint()">힌트 보기</button>
+            <button class="btn-secondary" onclick="makeQuiz()">다른 빈칸</button>
+        </div>
+
+        <div id="message"></div>
     </div>
 
     <script>
+        let fullText = "";
+        let blanks = [];
         let currentVerse = null;
 
-        // 성구 데이터 로드
-        async function fetchVerses() {
+        async function init() {
             try {
-                const response = await fetch('verses.json');
-                const data = await response.json();
-                if (data.length > 0) {
-                    currentVerse = data[data.length - 1]; // 가장 최신 성구
-                    document.getElementById('loading').style.display = 'none';
-                    document.getElementById('test-area').style.display = 'block';
-                    document.getElementById('reference-display').innerText = currentVerse.reference;
-                }
-            } catch (error) {
-                console.error('Error fetching verses:', error);
-                document.getElementById('loading').innerText = '성구를 불러오지 못했습니다.';
+                const res = await fetch('verses.json');
+                const data = await res.json();
+                // 가장 최근 성구를 가져오되, 나중에 데이터가 많아지면 랜덤 선택 가능
+                currentVerse = data[Math.floor(Math.random() * data.length)];
+                document.getElementById('ref-badge').innerText = currentVerse.reference;
+                fullText = currentVerse.text;
+                makeQuiz();
+            } catch (e) {
+                document.getElementById('ref-badge').innerText = "데이터 오류";
             }
         }
 
-        // 비교를 위해 텍스트 정규화 (공백, 구두점 제거)
-        function normalize(text) {
-            return text.replace(/[.,\s]/g, '').trim();
+        function makeQuiz() {
+            const words = fullText.split(' ');
+            const numBlanks = Math.max(1, Math.floor(words.length * 0.4)); // 40% 정도 빈칸
+            const blankIndices = [];
+            
+            while(blankIndices.length < numBlanks) {
+                let idx = Math.floor(Math.random() * words.length);
+                if(!blankIndices.includes(idx)) blankIndices.push(idx);
+            }
+            blankIndices.sort((a,b) => a-b);
+
+            blanks = blankIndices.map(idx => words[idx].replace(/[.,]/g, ''));
+            
+            let displayHTML = words.map((word, idx) => {
+                if(blankIndices.includes(idx)) return '<span class="blank">?</span>';
+                return word;
+            }).join(' ');
+
+            document.getElementById('quiz-text').innerHTML = displayHTML;
+            document.getElementById('answer-input').value = "";
+            document.getElementById('message').style.display = "none";
         }
 
-        function checkVerse() {
-            const userInput = document.getElementById('user-input').value;
-            const resultDiv = document.getElementById('result');
-            
-            const normalizedUser = normalize(userInput);
-            const normalizedTarget = normalize(currentVerse.text);
+        function checkAnswer() {
+            const userAns = document.getElementById('answer-input').value.replace(/\s/g, '');
+            const targetAns = blanks.join('').replace(/\s/g, '');
+            const msgDiv = document.getElementById('message');
 
-            resultDiv.style.display = 'block';
-            
-            if (normalizedUser === normalizedTarget) {
-                resultDiv.className = 'correct';
-                resultDiv.innerHTML = '<strong>✅ 정답입니다!</strong><br>완벽하게 외우셨네요.';
+            msgDiv.style.display = "block";
+            if(userAns === targetAns) {
+                msgDiv.className = "msg-success";
+                msgDiv.innerText = "🎉 정답입니다! 잘 외우셨네요.";
+                // 정답이면 빈칸 채워주기
+                const words = fullText.split(' ');
+                document.getElementById('quiz-text').innerText = fullText;
             } else {
-                resultDiv.className = 'wrong';
-                resultDiv.innerHTML = `
-                    <strong>❌ 다시 한번 확인해보세요.</strong>
-                    <span class="diff-label">[원문]</span>
-                    <span class="original-text">${currentVerse.text}</span>
-                `;
+                msgDiv.className = "msg-error";
+                msgDiv.innerText = "❌ 틀렸습니다. 다시 시도해보세요!";
             }
         }
 
-        // 초기화
-        fetchVerses();
+        function showHint() {
+            alert("원문: " + fullText);
+        }
+
+        init();
     </script>
 </body>
 </html>
