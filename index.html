@@ -101,7 +101,33 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 12px;
+        }
+
+        .difficulty-selector {
+            display: flex;
+            gap: 8px;
+            background: var(--input-border);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .diff-btn {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-sub);
+            transition: all 0.2s;
+        }
+
+        .diff-btn.active {
+            background: var(--card);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .info-badge {
@@ -258,6 +284,11 @@
         <div class="header">
             <h1>예은교회 암송성구</h1>
             <div class="info-badge-group">
+                <div class="difficulty-selector">
+                    <button class="diff-btn" onclick="setDifficulty('easy')" id="diff-easy">하</button>
+                    <button class="diff-btn" onclick="setDifficulty('normal')" id="diff-normal">중</button>
+                    <button class="diff-btn" onclick="setDifficulty('hard')" id="diff-hard">상</button>
+                </div>
                 <div id="ref-badge" class="info-badge">로딩 중...</div>
                 <div id="week-display" class="week-info"></div>
             </div>
@@ -293,6 +324,7 @@
         let currentVerse = null;
         let fullText = "";
         let blanks = [];
+        let difficulty = localStorage.getItem('difficulty') || 'normal';
 
         // 테마 관리
         function setTheme(theme) {
@@ -311,6 +343,17 @@
             }
         }
 
+        // 난이도 관리
+        function setDifficulty(level) {
+            difficulty = level;
+            localStorage.setItem('difficulty', level);
+            const btns = document.querySelectorAll('.diff-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            const targetBtn = document.getElementById('diff-' + level);
+            if(targetBtn) targetBtn.classList.add('active');
+            if (fullText) makeQuiz();
+        }
+
         function applySystemTheme() {
             if (!localStorage.getItem('theme')) {
                 const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -324,12 +367,15 @@
 
         async function init() {
             try {
+                // 난이도 UI 초기화
                 setDifficulty(difficulty);
+                
                 const res = await fetch('verses.json');
                 allVerses = await res.json();
                 loadNextVerse();
                 renderList();
             } catch (e) {
+                console.error(e);
                 document.getElementById('ref-badge').innerText = "데이터 오류";
             }
         }
@@ -404,16 +450,6 @@
         }
 
         function showHint() { alert("원문: " + fullText); }
-
-        document.getElementById('answer-input').addEventListener('keypress', (e) => {
-            if(e.key === 'Enter') checkAnswer();
-        });
-
-        init();
-    </script>
-</body>
-</html>
- }
 
         document.getElementById('answer-input').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') checkAnswer();
