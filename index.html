@@ -15,6 +15,7 @@
             --text-sub: #64748b;
             --input-border: #e2e8f0;
             --badge-bg: #e0e7ff;
+            --modal-bg: rgba(0, 0, 0, 0.5);
         }
 
         [data-theme="dark"] {
@@ -24,6 +25,7 @@
             --text-sub: #94a3b8;
             --input-border: #334155;
             --badge-bg: #312e81;
+            --modal-bg: rgba(0, 0, 0, 0.8);
         }
 
         body {
@@ -35,22 +37,30 @@
             justify-content: center;
             color: var(--text-main);
             transition: background-color 0.3s, color 0.3s;
+            min-height: 100vh;
         }
 
         .card {
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
             background: var(--card);
             padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            position: relative;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .theme-toggle {
-            position: absolute;
-            top: 15px;
-            right: 15px;
             display: flex;
             background: var(--input-border);
             border-radius: 20px;
@@ -58,7 +68,7 @@
         }
 
         .theme-btn {
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 15px;
             font-size: 0.75rem;
             cursor: pointer;
@@ -76,32 +86,29 @@
 
         .header {
             text-align: center;
-            margin: 10px 0 24px 0;
         }
 
         .header h1 {
-            font-size: 1.4rem;
-            margin: 0;
+            font-size: 1.5rem;
+            margin: 0 0 12px 0;
             color: var(--primary);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
         }
 
-        .info-group {
-            margin-top: 12px;
+        .info-badge-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
             align-items: center;
+            gap: 4px;
         }
 
         .info-badge {
-            display: inline-block;
             background: var(--badge-bg);
             color: var(--primary);
-            padding: 4px 12px;
+            padding: 4px 16px;
             border-radius: 99px;
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-size: 0.9rem;
+            font-weight: 800;
         }
 
         .week-info {
@@ -110,20 +117,22 @@
         }
 
         .quiz-container {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             line-height: 1.8;
-            margin-bottom: 24px;
             word-break: keep-all;
             text-align: center;
-            min-height: 100px;
+            min-height: 120px;
+            padding: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            background: var(--bg);
+            border-radius: 16px;
         }
 
         .blank {
             display: inline-block;
-            border-bottom: 2px solid var(--primary);
+            border-bottom: 3px solid var(--primary);
             min-width: 50px;
             margin: 0 4px;
             color: var(--primary);
@@ -132,15 +141,14 @@
 
         input[type="text"] {
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             border: 2px solid var(--input-border);
-            border-radius: 12px;
-            font-size: 1rem;
-            margin-bottom: 12px;
+            border-radius: 16px;
+            font-size: 1.1rem;
             box-sizing: border-box;
             background: var(--card);
             color: var(--text-main);
-            -webkit-appearance: none;
+            transition: border-color 0.2s;
         }
 
         input:focus {
@@ -148,55 +156,106 @@
             border-color: var(--primary);
         }
 
-        .btn-group {
+        .btn-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
-        button.main-btn {
+        button.action-btn {
             padding: 16px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .btn-primary { background: var(--primary); color: white; grid-column: span 2; }
-        .btn-secondary { background: var(--input-border); color: var(--text-sub); }
+        .btn-secondary { background: var(--input-border); color: var(--text-main); }
+        .btn-outline { background: transparent; border: 2px solid var(--input-border); color: var(--text-sub); grid-column: span 2; font-size: 0.9rem; }
         
-        button.main-btn:active { transform: scale(0.98); opacity: 0.8; }
+        button.action-btn:active { transform: scale(0.97); }
 
         #message {
-            margin-top: 16px;
-            padding: 14px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 16px;
             text-align: center;
             display: none;
-            font-weight: 600;
-            font-size: 0.95rem;
+            font-weight: 700;
         }
 
-        .msg-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
-        .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .msg-success { background: #dcfce7; color: #166534; }
+        .msg-error { background: #fee2e2; color: #991b1b; }
 
-        [data-theme="dark"] .msg-success { background: #064e3b; color: #34d399; border-color: #065f46; }
-        [data-theme="dark"] .msg-error { background: #450a0a; color: #f87171; border-color: #7f1d1d; }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-bg);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: var(--card);
+            max-width: 600px;
+            margin: 40px auto;
+            border-radius: 24px;
+            padding: 24px;
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .close-btn { font-size: 1.5rem; cursor: pointer; color: var(--text-sub); }
+
+        .verse-list-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--input-border);
+        }
+
+        .verse-list-item:last-child { border-bottom: none; }
+        .list-ref { font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+        .list-text { font-size: 0.95rem; line-height: 1.6; word-break: keep-all; }
+        .list-week { font-size: 0.8rem; color: var(--text-sub); margin-top: 8px; }
+
+        @media (max-width: 400px) {
+            body { padding: 10px; }
+            .card { padding: 20px; gap: 16px; }
+            .header h1 { font-size: 1.3rem; }
+            .quiz-container { font-size: 1.1rem; }
+        }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="theme-toggle">
-            <button class="theme-btn" onclick="setTheme('light')" id="theme-light">라이트</button>
-            <button class="theme-btn" onclick="setTheme('system')" id="theme-system">시스템</button>
-            <button class="theme-btn" onclick="setTheme('dark')" id="theme-dark">다크</button>
+        <div class="top-nav">
+            <div class="theme-toggle">
+                <button class="theme-btn" onclick="setTheme('light')" id="theme-light">라이트</button>
+                <button class="theme-btn" onclick="setTheme('system')" id="theme-system">시스템</button>
+                <button class="theme-btn" onclick="setTheme('dark')" id="theme-dark">다크</button>
+            </div>
+            <button class="theme-btn" onclick="toggleModal(true)" style="background: var(--badge-bg); color: var(--primary); font-weight: 700;">성구 목록</button>
         </div>
 
         <div class="header">
-            <h1>예은교회 암송성구 테스트</h1>
-            <div class="info-group">
+            <h1>예은교회 암송성구</h1>
+            <div class="info-badge-group">
                 <div id="ref-badge" class="info-badge">로딩 중...</div>
                 <div id="week-display" class="week-info"></div>
             </div>
@@ -206,26 +265,40 @@
 
         <input type="text" id="answer-input" placeholder="빈칸에 들어갈 말을 쓰세요" autocomplete="off" autofocus>
         
-        <div class="btn-group">
-            <button class="main-btn btn-primary" onclick="checkAnswer()">정답 확인</button>
-            <button class="main-btn btn-secondary" onclick="showHint()">힌트 보기</button>
-            <button class="main-btn btn-secondary" onclick="makeQuiz()">다른 빈칸</button>
+        <div class="btn-grid">
+            <button class="action-btn btn-primary" onclick="checkAnswer()">정답 확인</button>
+            <button class="action-btn btn-secondary" onclick="showHint()">힌트 보기</button>
+            <button class="action-btn btn-secondary" onclick="makeQuiz()">다른 빈칸</button>
+            <button class="action-btn btn-outline" onclick="loadNextVerse()">다른 성구 풀기</button>
         </div>
 
         <div id="message"></div>
     </div>
 
+    <!-- Verse List Modal -->
+    <div id="list-modal" class="modal" onclick="if(event.target == this) toggleModal(false)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">등록된 성구 목록</span>
+                <span class="close-btn" onclick="toggleModal(false)">&times;</span>
+            </div>
+            <div id="verse-list-container"></div>
+        </div>
+    </div>
+
     <script>
+        let allVerses = [];
+        let currentVerse = null;
         let fullText = "";
         let blanks = [];
-        let currentVerse = null;
 
         // 테마 관리
         function setTheme(theme) {
             const html = document.documentElement;
             const btns = document.querySelectorAll('.theme-btn');
             btns.forEach(b => b.classList.remove('active'));
-            document.getElementById('theme-' + theme).classList.add('active');
+            const targetBtn = document.getElementById('theme-' + theme);
+            if(targetBtn) targetBtn.classList.add('active');
 
             if (theme === 'system') {
                 localStorage.removeItem('theme');
@@ -244,28 +317,28 @@
         }
 
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applySystemTheme);
-
-        // 초기 테마 설정
         const savedTheme = localStorage.getItem('theme') || 'system';
         setTheme(savedTheme);
 
         async function init() {
             try {
                 const res = await fetch('verses.json');
-                const data = await res.json();
-                // 랜덤하게 하나 선택
-                currentVerse = data[Math.floor(Math.random() * data.length)];
-                
-                document.getElementById('ref-badge').innerText = currentVerse.reference;
-                if(currentVerse.week) {
-                    document.getElementById('week-display').innerText = currentVerse.week + " 주간 성구";
-                }
-                
-                fullText = currentVerse.text;
-                makeQuiz();
+                allVerses = await res.json();
+                loadNextVerse();
+                renderList();
             } catch (e) {
                 document.getElementById('ref-badge').innerText = "데이터 오류";
             }
+        }
+
+        function loadNextVerse() {
+            if(allVerses.length === 0) return;
+            currentVerse = allVerses[Math.floor(Math.random() * allVerses.length)];
+            
+            document.getElementById('ref-badge').innerText = currentVerse.reference;
+            document.getElementById('week-display').innerText = currentVerse.week ? currentVerse.week + " 주간 성구" : "";
+            fullText = currentVerse.text;
+            makeQuiz();
         }
 
         function makeQuiz() {
@@ -301,17 +374,30 @@
             msgDiv.style.display = "block";
             if(userAns === targetAns && userAns !== "") {
                 msgDiv.className = "msg-success";
-                msgDiv.innerText = "🎉 정답입니다! 잘 외우셨네요.";
+                msgDiv.innerText = "🎉 정답입니다!";
                 document.getElementById('quiz-text').innerText = fullText;
             } else {
                 msgDiv.className = "msg-error";
-                msgDiv.innerText = "❌ 다시 한번 생각해보세요!";
+                msgDiv.innerText = "❌ 다시 시도해보세요!";
             }
         }
 
-        function showHint() {
-            alert("원문: " + fullText);
+        function toggleModal(show) {
+            document.getElementById('list-modal').style.display = show ? 'block' : 'none';
         }
+
+        function renderList() {
+            const container = document.getElementById('verse-list-container');
+            container.innerHTML = allVerses.map(v => `
+                <div class="verse-list-item">
+                    <div class="list-ref">${v.reference}</div>
+                    <div class="list-text">${v.text}</div>
+                    <div class="list-week">${v.week || ''} 주간</div>
+                </div>
+            `).join('');
+        }
+
+        function showHint() { alert("원문: " + fullText); }
 
         document.getElementById('answer-input').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') checkAnswer();
