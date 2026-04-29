@@ -17,15 +17,13 @@
             --badge-bg: #e0e7ff;
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0f172a;
-                --card: #1e293b;
-                --text-main: #f1f5f9;
-                --text-sub: #94a3b8;
-                --input-border: #334155;
-                --badge-bg: #312e81;
-            }
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --input-border: #334155;
+            --badge-bg: #312e81;
         }
 
         body {
@@ -36,7 +34,7 @@
             display: flex;
             justify-content: center;
             color: var(--text-main);
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .card {
@@ -46,11 +44,39 @@
             padding: 24px;
             border-radius: 20px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            background: var(--input-border);
+            border-radius: 20px;
+            padding: 3px;
+        }
+
+        .theme-btn {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-sub);
+            transition: all 0.2s;
+        }
+
+        .theme-btn.active {
+            background: var(--card);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 24px;
+            margin: 10px 0 24px 0;
         }
 
         .header h1 {
@@ -128,7 +154,7 @@
             gap: 10px;
         }
 
-        button {
+        button.main-btn {
             padding: 16px;
             border: none;
             border-radius: 12px;
@@ -141,7 +167,7 @@
         .btn-primary { background: var(--primary); color: white; grid-column: span 2; }
         .btn-secondary { background: var(--input-border); color: var(--text-sub); }
         
-        button:active { transform: scale(0.98); opacity: 0.8; }
+        button.main-btn:active { transform: scale(0.98); opacity: 0.8; }
 
         #message {
             margin-top: 16px;
@@ -156,14 +182,18 @@
         .msg-success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
 
-        @media (prefers-color-scheme: dark) {
-            .msg-success { background: #064e3b; color: #34d399; border-color: #065f46; }
-            .msg-error { background: #450a0a; color: #f87171; border-color: #7f1d1d; }
-        }
+        [data-theme="dark"] .msg-success { background: #064e3b; color: #34d399; border-color: #065f46; }
+        [data-theme="dark"] .msg-error { background: #450a0a; color: #f87171; border-color: #7f1d1d; }
     </style>
 </head>
 <body>
     <div class="card">
+        <div class="theme-toggle">
+            <button class="theme-btn" onclick="setTheme('light')" id="theme-light">라이트</button>
+            <button class="theme-btn" onclick="setTheme('system')" id="theme-system">시스템</button>
+            <button class="theme-btn" onclick="setTheme('dark')" id="theme-dark">다크</button>
+        </div>
+
         <div class="header">
             <h1>예은교회 암송성구 테스트</h1>
             <div class="info-group">
@@ -177,9 +207,9 @@
         <input type="text" id="answer-input" placeholder="빈칸에 들어갈 말을 쓰세요" autocomplete="off" autofocus>
         
         <div class="btn-group">
-            <button class="btn-primary" onclick="checkAnswer()">정답 확인</button>
-            <button class="btn-secondary" onclick="showHint()">힌트 보기</button>
-            <button class="btn-secondary" onclick="makeQuiz()">다른 빈칸</button>
+            <button class="main-btn btn-primary" onclick="checkAnswer()">정답 확인</button>
+            <button class="main-btn btn-secondary" onclick="showHint()">힌트 보기</button>
+            <button class="main-btn btn-secondary" onclick="makeQuiz()">다른 빈칸</button>
         </div>
 
         <div id="message"></div>
@@ -190,10 +220,40 @@
         let blanks = [];
         let currentVerse = null;
 
+        // 테마 관리
+        function setTheme(theme) {
+            const html = document.documentElement;
+            const btns = document.querySelectorAll('.theme-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            document.getElementById('theme-' + theme).classList.add('active');
+
+            if (theme === 'system') {
+                localStorage.removeItem('theme');
+                applySystemTheme();
+            } else {
+                localStorage.setItem('theme', theme);
+                html.setAttribute('data-theme', theme);
+            }
+        }
+
+        function applySystemTheme() {
+            if (!localStorage.getItem('theme')) {
+                const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            }
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applySystemTheme);
+
+        // 초기 테마 설정
+        const savedTheme = localStorage.getItem('theme') || 'system';
+        setTheme(savedTheme);
+
         async function init() {
             try {
                 const res = await fetch('verses.json');
                 const data = await res.json();
+                // 랜덤하게 하나 선택
                 currentVerse = data[Math.floor(Math.random() * data.length)];
                 
                 document.getElementById('ref-badge').innerText = currentVerse.reference;
@@ -253,7 +313,6 @@
             alert("원문: " + fullText);
         }
 
-        // 엔터키 지원
         document.getElementById('answer-input').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') checkAnswer();
         });
